@@ -6,6 +6,10 @@
     "start": "node index.js",
     "build": "echo 'No build step needed'"
   },
+  "engines": {
+  "node": ">=18"
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",
