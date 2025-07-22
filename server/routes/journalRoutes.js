@@ -85,33 +85,28 @@ const moodBoosters = {
 
 // POST route to create journal entry
 // POST route to create journal entry
-router.post("/", async (req, res) => {
-  const { text } = req.body;
-
+router.post('/', async (req, res) => {
   try {
-    const { feedback, mood } = generateFeedback(text);
-    const booster = moodBoosters[mood] || moodBoosters.default;
+    const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+    const feedback = generateFeedback(content); // ✅ safe now
 
     const newEntry = new Journal({
-      text,
-      date: new Date() // ✅ Ensure date is saved
-    });
-
-    const savedEntry = await newEntry.save();
-
-    // ✅ Return the correct booster as "moodBooster" and include date if needed
-    res.status(200).json({
-      message: "Saved",
+      content,
       feedback,
-      moodBooster: booster, // ✅ Fix field name so frontend gets it
-      date: savedEntry.date // optional: in case frontend wants to display this directly
     });
+
+    await newEntry.save();
+    res.json(newEntry);
   } catch (err) {
-    console.error("❌ Error in POST /api/journals:", err);
-    res.status(500).json({ error: "Failed to save journal entry" });
+    console.error('❌ Error in POST /api/journals:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 // GET all entries
 router.get("/", async (req, res) => {
